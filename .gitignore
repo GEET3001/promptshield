@@ -8,3 +8,4 @@ results/*.tmp
 models/
 data/translation_cache.json
 .DS_Store
+colab_cell.txt
