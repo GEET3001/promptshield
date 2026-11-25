@@ -1,0 +1,5 @@
+model,f1_en,f1_hi_hinglish,gap
+rules,0.5923,0.5,0.0923
+tfidf_logreg,0.9487,0.8947,0.054
+protectai_deberta,0.9329,0.766,0.1669
+muril,0.9512,0.9639,-0.0127

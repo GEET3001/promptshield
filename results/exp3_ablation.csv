@@ -1,0 +1,4 @@
+config,attacks_caught_pct,safe_wrongly_blocked_pct,latency_mean_ms,latency_p95_ms
+full,91.1,0.9,146.8,537.9
+no_rules,91.1,0.9,94.5,318.4
+no_classifier,43.3,0.0,0.3,1.5
