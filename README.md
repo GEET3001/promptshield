@@ -75,7 +75,7 @@ The English-only ProtectAI model loses 17 F1 points on Hindi/Hinglish; MuRIL sho
 - Demo run (`results/scripted_results.csv`): with the shield off, 7 of 20 scripted attacks leaked a secret; with it on, 18 of 20 were blocked and 0 of 3 safe prompts were. The demo bot's system prompt was deliberately weakened (no "never reveal" sentence) so attacks can succeed.
 
 ## Links
-- Live demo: _(add Space URL)_
+- Live demo: https://promptshield-8my9icprhke5ntl3afinad.streamlit.app/
 - Dataset: `GEET3001/promptshield-data` (private) · Model: `GEET3001/promptshield-muril` (private) · Dataset card: `data/README.md`
 - Viva preparation: `docs/viva.md`
 
