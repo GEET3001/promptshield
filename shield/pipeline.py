@@ -12,7 +12,7 @@ def _ms(start: float) -> float:
     return round((time.perf_counter() - start) * 1000, 2)
 
 
-def run(message: str, shield_on: bool = True) -> dict:
+def run(message: str, shield_on: bool = True, context: str = None) -> dict:
     """Process one user message. shield_on=False skips PII, rules, classifier, judge and output guard."""
     t_start = time.perf_counter()
     lat = {k: 0.0 for k in ("pii", "rules", "classifier", "judge", "llm", "output_guard", "total")}
@@ -77,7 +77,7 @@ def run(message: str, shield_on: bool = True) -> dict:
         reply = "[LLM call skipped]"
     else:
         try:
-            reply = chatbot.chat(llm_input)
+            reply = chatbot.chat(llm_input, context=context) if context else chatbot.chat(llm_input)
         except Exception:
             reply = LLM_ERROR_MSG
     lat["llm"] = _ms(t)

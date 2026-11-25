@@ -18,10 +18,15 @@ def get_system_prompt() -> str:
     )
 
 
-def chat(message: str) -> str:
-    """Send one user message to Gemini with the system prompt and return the reply text."""
+def chat(message: str, context: str = None) -> str:
+    """Send one user message to Gemini with the system prompt and return the reply text.
+    `context` = document excerpts the bot should answer from (it goes in the user turn, like real RAG)."""
     from google.genai import types  # lazy import
     client = config.gemini_client()
+    if context:
+        message = ("Answer using only the document excerpts below. If the answer is not in them, say you "
+                   "could not find it.\n\n--- DOCUMENT EXCERPTS ---\n" + context +
+                   "\n--- END ---\n\nQuestion: " + message)
     resp = client.models.generate_content(
         model=config.GEMINI_MODEL,
         contents=message,
