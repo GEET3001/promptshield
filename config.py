@@ -19,6 +19,7 @@ RESULTS_DIR = ROOT / "results"
 # ---------------- accounts / models ----------------
 HF_USERNAME = "GEET3001"
 GEMINI_MODEL = "gemini-flash-lite-latest"  # CHECK: 2.5-flash free tier is only 20 requests/day
+JUDGE_GEMINI_MODEL = GEMINI_MODEL  # CHECK: pin to a versioned model when quota allows; re-check JUDGE_T after any change
 GROQ_JUDGE_MODEL = "llama-3.1-8b-instant"  # CHECK: current free Groq model name
 MURIL_BASE = "google/muril-base-cased"
 PROTECTAI_MODEL = "protectai/deberta-v3-base-prompt-injection-v2"

@@ -36,7 +36,7 @@ def _judge_gemini(prompt: str, system: str) -> str:
     from google.genai import types
     client = config.gemini_client(timeout_s=config.JUDGE_TIMEOUT_S)  # timeout -> judge() fails closed
     resp = client.models.generate_content(
-        model=config.GEMINI_MODEL, contents=f"Message to classify:\n<<<\n{prompt}\n>>>",
+        model=config.JUDGE_GEMINI_MODEL, contents=f"Message to classify:\n<<<\n{prompt}\n>>>",
         config=types.GenerateContentConfig(system_instruction=system, temperature=0,
                                            response_mime_type="application/json"))
     return resp.text or ""

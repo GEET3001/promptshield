@@ -1,11 +1,10 @@
 """Fine-tune MuRIL for attack detection. Meant for a Colab T4 GPU.
 Colab cells (Runtime > Change runtime type > T4 GPU):
-  1) !git clone https://github.com/<you>/promptshield.git && %cd promptshield
+  1) !git clone https://github.com/GEET3001/promptshield.git && %cd promptshield
   2) !pip install -q transformers datasets accelerate scikit-learn matplotlib python-dotenv
-  3) from google.colab import drive; drive.mount('/content/drive')
-  4) upload data/train.csv, data/val.csv, results/baselines_val.csv into the cloned folders (or git pull them)
-  5) import os; os.environ['HF_TOKEN']='<your HF write token>'   # only needed for --push
-  6) !python scripts/finetune.py --output_dir /content/drive/MyDrive/promptshield_muril --push
+  3) import os; os.environ['HF_TOKEN']='<your HF write token>'
+  4) !python scripts/finetune.py --from_hub --output_dir /content/muril_out --push
+  5) copy the printed BLOCK_T and the "muril" table row back to Claude; the rest is automatic.
 """
 import argparse
 import os
@@ -35,6 +34,7 @@ def main():
     ap.add_argument("--train", default=str(config.DATA_DIR / "train.csv"))
     ap.add_argument("--val", default=str(config.DATA_DIR / "val.csv"))
     ap.add_argument("--output_dir", default="models/muril")
+    ap.add_argument("--from_hub", action="store_true", help="load train/val from the private HF dataset repo")
     ap.add_argument("--push", action="store_true", help="upload the model to a private HF repo")
     args = ap.parse_args()
 
@@ -45,7 +45,12 @@ def main():
                               Trainer, TrainingArguments, set_seed)
 
     set_seed(config.SEED)
-    train_df, val_df = pd.read_csv(args.train), pd.read_csv(args.val)
+    if args.from_hub:
+        from datasets import load_dataset
+        hub = load_dataset(config.DATASET_REPO, token=os.getenv("HF_TOKEN"))
+        train_df, val_df = hub["train"].to_pandas(), hub["validation" if "validation" in hub else "val"].to_pandas()
+    else:
+        train_df, val_df = pd.read_csv(args.train), pd.read_csv(args.val)
     tok = AutoTokenizer.from_pretrained(config.MURIL_BASE)
 
     def to_ds(df):
