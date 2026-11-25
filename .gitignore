@@ -1,0 +1,10 @@
+.env
+.venv/
+__pycache__/
+*.pyc
+*.db
+results/*.tmp
+.pytest_cache/
+models/
+data/translation_cache.json
+.DS_Store

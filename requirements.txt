@@ -1,0 +1,16 @@
+python-dotenv
+google-genai
+groq
+pandas
+numpy
+scikit-learn
+matplotlib
+transformers
+torch
+datasets
+huggingface_hub
+fastapi
+uvicorn
+streamlit
+requests
+pytest
