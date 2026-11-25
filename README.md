@@ -83,7 +83,8 @@ The English-only ProtectAI model loses 17 F1 points on Hindi/Hinglish; MuRIL sho
 Regex PII (no Presidio), one fine-tuned model plus baselines, single-process app. Out of scope: indirect injection, garak, HackAPrompt.
 
 ## Team
-_(add names)_
+- Geet Natu (BTECH/10149/23)
+- Aman Nautiyal (BTECH/10171/23)
 
 ## Licence
 MIT
