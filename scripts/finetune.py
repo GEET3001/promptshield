@@ -64,9 +64,12 @@ def main():
     def compute_metrics(p):
         return {"f1": f1_score(p.label_ids, p.predictions.argmax(-1))}
 
+    # 10% of all training steps as warmup (newer transformers versions dropped warmup_ratio)
+    epochs, batch = 4, 16
+    warmup_steps = int(0.1 * epochs * -(-len(train_ds) // batch))
     targs = TrainingArguments(
-        output_dir=args.output_dir, learning_rate=2e-5, per_device_train_batch_size=16,
-        per_device_eval_batch_size=32, num_train_epochs=4, weight_decay=0.01, warmup_ratio=0.1,
+        output_dir=args.output_dir, learning_rate=2e-5, per_device_train_batch_size=batch,
+        per_device_eval_batch_size=32, num_train_epochs=epochs, weight_decay=0.01, warmup_steps=warmup_steps,
         eval_strategy="epoch", save_strategy="epoch", load_best_model_at_end=True,
         metric_for_best_model="f1", greater_is_better=True, save_total_limit=1,
         fp16=torch.cuda.is_available(), seed=config.SEED, report_to="none")
