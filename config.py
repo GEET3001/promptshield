@@ -18,7 +18,7 @@ RESULTS_DIR = ROOT / "results"
 
 # ---------------- accounts / models ----------------
 HF_USERNAME = "GEET3001"
-GEMINI_MODEL = "gemini-2.5-flash"          # CHECK: current free Gemini model name
+GEMINI_MODEL = "gemini-flash-lite-latest"  # CHECK: 2.5-flash free tier is only 20 requests/day
 GROQ_JUDGE_MODEL = "llama-3.1-8b-instant"  # CHECK: current free Groq model name
 MURIL_BASE = "google/muril-base-cased"
 PROTECTAI_MODEL = "protectai/deberta-v3-base-prompt-injection-v2"
@@ -48,12 +48,13 @@ PERSONA = "Riverside Institute of Technology Help Desk"
 SEED = 42
 
 
-def gemini_client():
-    """One place to build the Gemini client (v1beta is needed for system instructions)."""
+def gemini_client(timeout_s: float = 60):
+    """One place to build the Gemini client (v1beta is needed for system instructions).
+    The judge passes a short timeout so a slow provider fails closed instead of hanging."""
     from google import genai
     from google.genai import types
     return genai.Client(api_key=get_secret("GEMINI_API_KEY"),
-                        http_options=types.HttpOptions(api_version="v1beta"))
+                        http_options=types.HttpOptions(api_version="v1beta", timeout=int(timeout_s * 1000)))
 
 
 def judge_provider() -> str:

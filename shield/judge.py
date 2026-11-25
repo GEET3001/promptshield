@@ -34,7 +34,7 @@ def _parse(raw: str) -> dict:
 def _judge_gemini(prompt: str, system: str) -> str:
     """Fallback judge on Gemini (used when no GROQ_API_KEY is available)."""
     from google.genai import types
-    client = config.gemini_client()
+    client = config.gemini_client(timeout_s=config.JUDGE_TIMEOUT_S)  # timeout -> judge() fails closed
     resp = client.models.generate_content(
         model=config.GEMINI_MODEL, contents=f"Message to classify:\n<<<\n{prompt}\n>>>",
         config=types.GenerateContentConfig(system_instruction=system, temperature=0,

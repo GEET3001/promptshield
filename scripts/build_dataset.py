@@ -167,6 +167,19 @@ def cap_sources(df, frac=0.4):
         print(f"Capped source '{top}' from {n} to {allowed} rows (40% rule).")
 
 
+def balance_labels(df, max_attack_frac=0.5):
+    """Downsample attacks (evenly across sources) so they are at most half of the rows."""
+    n_safe = (df["label"] == 0).sum()
+    atk = df[df["label"] == 1]
+    allowed = int(max_attack_frac / (1 - max_attack_frac) * n_safe)
+    if len(atk) <= allowed:
+        return df
+    keep = pd.concat([atk[atk["source"] == s].sample(int(round((atk["source"] == s).sum() * allowed / len(atk))),
+                                                     random_state=SEED) for s in atk["source"].unique()])
+    print(f"Balanced attacks from {len(atk)} to {len(keep)} rows (<= {max_attack_frac:.0%} of data).")
+    return pd.concat([df[df["label"] == 0], keep]).reset_index(drop=True)
+
+
 # ---------------------------------------------------------------- translation
 def translate_batch(client, items, lang):
     """Translate a list of strings into `hi` (Devanagari) or `hinglish` (Roman script) via Gemini."""
@@ -265,10 +278,18 @@ def main():
     ap.add_argument("--skip-translate", action="store_true", help="build without Hindi/Hinglish rows")
     ap.add_argument("--new-check", action="store_true", help="overwrite translation_check.csv with a fresh sample")
     ap.add_argument("--push", action="store_true", help="push to a private HF dataset repo")
+    ap.add_argument("--push-only", action="store_true", help="push the existing train/val/test CSVs without rebuilding")
     args = ap.parse_args()
     DATA.mkdir(exist_ok=True)
+    if args.push_only:
+        from datasets import Dataset, DatasetDict
+        dd = DatasetDict({s: Dataset.from_pandas(pd.read_csv(DATA / f"{s}.csv"), preserve_index=False)
+                          for s in ("train", "val", "test")})
+        dd.push_to_hub(config.DATASET_REPO, private=True, token=os.getenv("HF_TOKEN"))
+        print("Pushed to", config.DATASET_REPO)
+        return
 
-    base = cap_sources(clean(load_all_english()))
+    base = balance_labels(cap_sources(clean(load_all_english())))
     base["unit_id"] = range(len(base))
     parts = [base.assign(orig_text="")]
     if not args.skip_translate:

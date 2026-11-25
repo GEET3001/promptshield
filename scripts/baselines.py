@@ -30,11 +30,11 @@ def fit_tfidf(train_df):
 def predict_protectai(texts):
     """Zero-shot ProtectAI DeBERTa. The attack label name is read from the model config."""
     from transformers import pipeline
-    pipe = pipeline("text-classification", model=config.PROTECTAI_MODEL, truncation=True, max_length=512)
+    pipe = pipeline("text-classification", model=config.PROTECTAI_MODEL, truncation=True, max_length=256)
     id2label = pipe.model.config.id2label
     attack_labels = {v for v in id2label.values() if str(v).upper() != "SAFE"}
     print("ProtectAI labels:", id2label, "-> attack:", attack_labels)
-    out = pipe(list(texts), batch_size=16)
+    out = pipe(list(texts), batch_size=4)
     return [int(o["label"] in attack_labels) for o in out]
 
 
