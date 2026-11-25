@@ -1,4 +1,5 @@
 """PromptShield: a document assistant with a visible security layer.  Run:  streamlit run app/Home.py"""
+import html
 import sys
 from pathlib import Path
 
@@ -114,7 +115,7 @@ with main:
         scan_chip = (ui.chip("No hidden instructions found", "ok") if n == 0 else
                      ui.chip(f"{n} suspicious passage{'s' if n > 1 else ''} found", "warn"))
         shield_chip = ui.chip("Shield on", "ok") if shield_on else ui.chip("Shield off", "bad")
-        st.markdown(f'<div class="ps-doc"><b>{doc["name"]}</b>'
+        st.markdown(f'<div class="ps-doc"><b>{html.escape(doc["name"])}</b>'
                     f'<span class="meta">{len(doc["chunks"])} passages</span>'
                     f'<span class="meta">{doc["chars"]:,} characters</span>{scan_chip}{shield_chip}</div>',
                     unsafe_allow_html=True)
