@@ -28,7 +28,7 @@ CLASSIFIER_SOURCE = os.getenv("CLASSIFIER_SOURCE", f"{HF_USERNAME}/promptshield-
 DATASET_REPO = f"{HF_USERNAME}/promptshield-data"
 
 # ---------------- thresholds ----------------
-BLOCK_T = 0.85   # CHECK: placeholder. Replace with the value printed by scripts/finetune.py
+BLOCK_T = 0.90   # set from scripts/finetune.py output (val FPR <= 2%)
 JUDGE_T = 0.4    # p >= BLOCK_T -> block; JUDGE_T <= p < BLOCK_T -> ask the LLM judge
 TARGET_FPR = 0.02  # false-positive target on safe validation prompts when picking BLOCK_T
 
