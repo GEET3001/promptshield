@@ -71,6 +71,11 @@ def run(message: str, shield_on: bool = True, context: str = None) -> dict:
             if verdict["verdict"] == "ATTACK":
                 return block("judge", attack_type=verdict["attack_type"])
 
+    # Defence in depth for document questions: re-check the passages that are about to be sent to the
+    # chatbot with the rule filter, in case the upload-time scan missed them.
+    if shield_on and context and config.USE_RULES:
+        context = "\n\n".join(p for p in context.split("\n\n") if not rules.check(p)[0])
+
     # 5. Chatbot LLM
     t = time.perf_counter()
     if config.SKIP_LLM:

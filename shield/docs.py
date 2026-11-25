@@ -40,7 +40,18 @@ def make_chunks(text: str):
 def scan(chunks):
     """Find passages that look like instructions aimed at the AI. Returns [{index, reason, score}]."""
     flags = []
+    flagged = set()
+    # An attack sentence can be cut in two by chunking, so also check each seam between neighbours.
+    for i in range(1, len(chunks)):
+        seam = chunks[i - 1][-200:] + " " + chunks[i][:200]
+        hit, attack_type, _ = rules.check(seam)
+        if hit and not rules.check(chunks[i - 1])[0] and not rules.check(chunks[i])[0]:
+            for j in (i - 1, i):
+                flagged.add(j)
+                flags.append({"index": j, "reason": f"attack pattern split across passages ({attack_type})", "score": None})
     for i, chunk in enumerate(chunks):
+        if i in flagged:
+            continue
         hit, attack_type, _ = rules.check(chunk)
         if hit:
             flags.append({"index": i, "reason": f"matches a known attack pattern ({attack_type})", "score": None})
