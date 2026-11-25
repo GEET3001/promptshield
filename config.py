@@ -48,6 +48,19 @@ PERSONA = "Riverside Institute of Technology Help Desk"
 SEED = 42
 
 
+def gemini_client():
+    """One place to build the Gemini client (v1beta is needed for system instructions)."""
+    from google import genai
+    from google.genai import types
+    return genai.Client(api_key=get_secret("GEMINI_API_KEY"),
+                        http_options=types.HttpOptions(api_version="v1beta"))
+
+
+def judge_provider() -> str:
+    """'groq' if GROQ_API_KEY is set, otherwise fall back to 'gemini'."""
+    return "groq" if os.getenv("GROQ_API_KEY") else "gemini"
+
+
 def get_secret(name: str) -> str:
     """Read a secret from the environment; fail with a clear message if missing."""
     value = os.getenv(name)

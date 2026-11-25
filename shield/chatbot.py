@@ -18,9 +18,8 @@ def get_system_prompt() -> str:
 
 def chat(message: str) -> str:
     """Send one user message to Gemini with the system prompt and return the reply text."""
-    from google import genai  # lazy import
-    from google.genai import types
-    client = genai.Client(api_key=config.get_secret("GEMINI_API_KEY"))
+    from google.genai import types  # lazy import
+    client = config.gemini_client()
     resp = client.models.generate_content(
         model=config.GEMINI_MODEL,
         contents=message,

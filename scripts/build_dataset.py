@@ -200,8 +200,7 @@ def valid_translation(text, lang):
 
 def translate_rows(base, n_per_label=300):
     """Pick n attacks + n safe English rows and translate half to hi, half to hinglish."""
-    from google import genai
-    client = genai.Client(api_key=config.get_secret("GEMINI_API_KEY"))
+    client = config.gemini_client()
     cache = json.loads(CACHE_PATH.read_text(encoding="utf-8")) if CACHE_PATH.exists() else {}
     pool = base[(base["language"] == "en") & (base["text"].str.len() <= 400)]
     picks = []

@@ -31,8 +31,21 @@ def _parse(raw: str) -> dict:
             "reason": str(data.get("reason", ""))[:300], "error": False}
 
 
+def _judge_gemini(prompt: str, system: str) -> str:
+    """Fallback judge on Gemini (used when no GROQ_API_KEY is available)."""
+    from google.genai import types
+    client = config.gemini_client()
+    resp = client.models.generate_content(
+        model=config.GEMINI_MODEL, contents=f"Message to classify:\n<<<\n{prompt}\n>>>",
+        config=types.GenerateContentConfig(system_instruction=system, temperature=0,
+                                           response_mime_type="application/json"))
+    return resp.text or ""
+
+
 def judge_raw(prompt: str, system: str = JUDGE_SYSTEM) -> str:
-    """Call Groq once and return the raw text (also used by smoke_test.py)."""
+    """Call the judge LLM once and return raw text (Groq if a key exists, else Gemini)."""
+    if not config.judge_provider() == "groq":
+        return _judge_gemini(prompt, system)
     from groq import Groq  # lazy import
     client = Groq(api_key=config.get_secret("GROQ_API_KEY"), timeout=config.JUDGE_TIMEOUT_S)
     resp = client.chat.completions.create(
