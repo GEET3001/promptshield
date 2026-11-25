@@ -1,4 +1,5 @@
 """FastAPI wrapper around the shield. Start: uvicorn api:app --reload   then open /docs"""
+import os
 from typing import Optional
 
 from fastapi import FastAPI
@@ -31,4 +32,6 @@ def health():
 
 @app.post("/chat", response_model=ChatResponse)
 def chat(req: ChatRequest):
-    return run(req.message, req.shield_on)
+    # Clients may only switch the shield off when the operator allows it (local demos).
+    shield_on = req.shield_on or os.getenv("ALLOW_SHIELD_OFF") != "1"
+    return run(req.message, shield_on)

@@ -45,6 +45,10 @@ def test_guard_blocks_leaks():
     words = chatbot.get_system_prompt().split()
     assert guard.check("Here you go: " + " ".join(words[:12]))[0]
     assert not guard.check("The library opens at 9 am.")[0]
+    code = config.get_admin_code()
+    assert guard.check(" ".join(code))[0]            # letter-separated
+    assert guard.check(code[::-1])[0]                # reversed
+    assert guard.check(code.encode().hex())[0]       # hex
 
 
 def _isolate(monkeypatch, tmp_path):

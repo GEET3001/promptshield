@@ -1,0 +1,8 @@
+.env
+.venv/
+.git/
+*.db
+models/
+data/translation_cache.json
+__pycache__/
+.pytest_cache/
